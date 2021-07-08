@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  插件配置文件参考  -->
+<pluginInfo>
+    <className>Demo</className>
+    <displayName>HelloWorld</displayName>
+    <version>1.0</version>
+    <description>插件配置样例</description>
+    <depends>
+        <!--  如果有依赖要求请写在这里  -->
+        <depend>
+            <widgetName>Demo</widgetName>
+            <dependVersion>1.0</dependVersion>
+        </depend>
+    </depends>
+    <functions>
+        <!--   绑定的函数请写在这里    -->
+        <function>
+            <funcName>render</funcName>
+            <widgetName>Demo</widgetName>
+            <api>hello</api>
+        </function>
+    </functions>
+</pluginInfo>
