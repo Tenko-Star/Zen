@@ -1,11 +1,12 @@
 <?php
 
+/**
+ * Abstract Class Zen_Action_Widget
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 abstract class Zen_Action_Widget extends Zen_Widget {
-    /**
-     * 初始化函数
-     */
-    public function init() { }
-
     /**
      * 执行组件功能
      *

@@ -2,6 +2,9 @@
 
 /**
  * 数据库PDOMysql适配器
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 abstract class Zen_DB_Adapter_Pdo implements Zen_DB_Adapter
 {
@@ -45,7 +48,7 @@ abstract class Zen_DB_Adapter_Pdo implements Zen_DB_Adapter
             return $this->_object;
         } catch (PDOException $e) {
             /** 数据库异常 */
-            throw new Zen_DB_Adapter_Exception($e->getMessage());
+            throw new Zen_DB_Adapter_Exception($e->getMessage(), HTTP_SERVER_ERROR);
         }
     }
 

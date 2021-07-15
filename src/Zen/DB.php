@@ -3,7 +3,8 @@
 /**
  * 数据库连接类
  *
- * @author tenko_
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 class Zen_DB {
 
@@ -50,6 +51,10 @@ class Zen_DB {
 
     /* 非关系型数据库 */
     const NOSQL = 'NOSQL'; //未启用
+
+    //unsafe类型
+    const QUERY     =       1;
+    const FUNCTION  =       2;
 
     /* 数据库操作常量 */
     //template
@@ -168,7 +173,7 @@ class Zen_DB {
         }
 
         if(!call_user_func(array($adapter_name, 'isAvailable'))) {
-            throw new Zen_DB_Exception("{$adapter_name} is not available.");
+            throw new Zen_DB_Exception("{$adapter_name} is not available.", HTTP_SERVER_ERROR);
         }
         $this->_index = $index;
         $this->_adapter = new $adapter_name();
@@ -188,6 +193,7 @@ class Zen_DB {
      * @param int $authority
      * @param string $prefix
      * @return Zen_DB
+     * @throws Zen_DB_Exception
      */
     public static function get(int $authority = self::AUTH_READ, string $prefix = '') : Zen_DB{
         return new Zen_DB($authority, $prefix);
@@ -216,6 +222,29 @@ class Zen_DB {
         }
 
         return $isFinished;
+    }
+
+    /**
+     * 不进行权限检查，直接操作数据库对象
+     *
+     * @param string | callable $data
+     * @return mixed
+     * @throws Zen_DB_Query_Exception
+     */
+    public function unsafe($data = NULL) {
+        if($data === NULL) { return $this->_adapter; }
+
+        if(is_callable($data)) {
+            $argc = func_num_args();
+            $args = array();
+            for($i = 1; $i < $argc; $i++) {
+                $args[] = func_get_arg($i);
+            }
+            return call_user_func_array($data, $args);
+        }elseif(is_string($data)) {
+            return $this->_adapter->query($data, $this->_handle);
+        }
+        return false;
     }
 
     /**
@@ -309,7 +338,8 @@ class Zen_DB {
     private function connect() {
         // MAIN => WRITE transfer
         $authority = ($this->_authority === self::AUTH_MAIN) ? self::AUTH_WRITE : $this->_authority;
-        $this->_adapter->connect(self::$_available[$authority][$this->_index][self::CONFIG]);
+        //获取实际数据库句柄
+        $this->_handle = $this->_adapter->connect(self::$_available[$authority][$this->_index][self::CONFIG]);
     }
 
     /**
@@ -322,6 +352,15 @@ class Zen_DB {
     }
 
     /**
+     * 设置前缀
+     *
+     * @param string $prefix
+     */
+    public function setPrefix(string $prefix) {
+        $this->_prefix = $prefix;
+    }
+
+    /**
      * 获取数据库版本
      *
      * @return string
@@ -330,8 +369,22 @@ class Zen_DB {
         return $this->_adapter->getVersion();
     }
 
+    /**
+     *获取数据库信息
+     *
+     * @return array
+     */
     public static function getDatabaseInfo() : array {
         return self::$_available[self::POOL_INFO];
+    }
+
+    /**
+     * 获取当前数据库句柄
+     *
+     * @return mixed|string
+     */
+    public function getHandle() {
+        return $this->_handle;
     }
 
     /**
@@ -339,7 +392,7 @@ class Zen_DB {
      *
      * @return Zen_DB_Query
      */
-    private function sql() : Zen_DB_Query {
+    public function sql() : Zen_DB_Query {
         return new Zen_DB_Query($this->_adapter, $this->_prefix);
     }
 
@@ -451,6 +504,8 @@ class Zen_DB {
             case self::INSERT:
                 return $this->_adapter->lastInsertId($res, $this->_handle);
             case self::SELECT:
+            case self::GET:
+            case self::SET:
             case self::CACHE:
             default:
                 return $res;
@@ -483,20 +538,15 @@ class Zen_DB {
      * 一次取出一行
      *
      * @param Zen_DB_Query $query 查询对象
-     * @param array|null $filter 行过滤器函数,将查询的每一行作为第一个参数传入指定的过滤器中
+     * @param callable|null $filter 行过滤器函数,将查询的每一行作为第一个参数传入指定的过滤器中
      * @return mixed
      * @throws Zen_DB_Exception
      */
-    public function fetchRow(Zen_DB_Query $query, array $filter = NULL) {
+    public function fetchRow(Zen_DB_Query $query, callable $filter = NULL) {
         $resource = $this->query($query);
 
-        /** 取出过滤器 */
-        if ($filter) {
-            list($object, $method) = $filter;
-        }
-
         return ($rows = $this->_adapter->fetch($resource)) ?
-            ($filter ? $object->$method($rows) : $rows) :
+            ($filter ? call_user_func($filter, $rows) : $rows) :
             array();
     }
 
@@ -504,20 +554,16 @@ class Zen_DB {
      * 一次取出一个对象
      *
      * @param mixed $query 查询对象
-     * @param array|null $filter 行过滤器函数,将查询的每一行作为第一个参数传入指定的过滤器中
+     * @param callable|null $filter 行过滤器函数,将查询的每一行作为第一个参数传入指定的过滤器中
      * @return object
      * @throws Zen_DB_Exception
      */
-    public function fetchObject($query, array $filter = NULL) : Zen_DB_Query {
+    public function fetchObject(Zen_DB_Query $query, callable $filter = NULL) {
         $resource = $this->query($query);
 
-        /** 取出过滤器 */
-        if ($filter) {
-            list($object, $method) = $filter;
-        }
 
         return ($rows = $this->_adapter->fetchObject($resource)) ?
-            ($filter ? $object->$method($rows) : $rows) :
+            ($filter ? call_user_func($filter, $rows) : $rows) :
             new stdClass();
     }
 }

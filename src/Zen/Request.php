@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_Request
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_Request {
     /**
      * http参数
@@ -111,15 +117,15 @@ class Zen_Request {
      * @param string|string[] $params
      * @throws Zen_Widget_Exception
      */
-    protected function checkParams($params) {
+    private function checkParams($params) {
         if(is_array($params)) {
             return array_map(array($this, 'checkParams'), $params);
         }
 
         if(!empty(__EXTRA_CHECK_STR__)) {
-            Zen_Widget::call_widget_func(__EXTRA_CHECK_STR__, $params);
+            return Zen_Widget::callWidgetFunction(__EXTRA_CHECK_STR__, $params);
         }
-        return call_user_func(array('Zen_Common', 'checkParams'), $params);
+        return call_user_func(array('Zen_Security', 'checkParams'), $params);
     }
 
     /**
@@ -128,7 +134,7 @@ class Zen_Request {
      * @param string $ip
      * @return bool
      */
-    protected function checkIp(string $ip): bool {
+    private function checkIp(string $ip): bool {
         if (__ZEN_FILTER_SUPPORT__) {
             return false !== (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)
                     || filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6));
@@ -144,7 +150,7 @@ class Zen_Request {
      * @param string $agent ua字符串
      * @return boolean
      */
-    protected function checkAgent(string $agent) : bool {
+    private function checkAgent(string $agent) : bool {
         return preg_match("/^[_a-z0-9- ,:;=#@.()\/+*?]+$/i", $agent);
     }
 
@@ -154,7 +160,7 @@ class Zen_Request {
      * @access public
      * @return boolean
      */
-    protected function checkProtocol() : bool {
+    private function checkProtocol() : bool {
         return (
             (!empty($_SERVER['HTTPS']) && 'off' != strtolower($_SERVER['HTTPS']))   ||
             (!empty($_SERVER['SERVER_PORT']) && 443 == $_SERVER['SERVER_PORT'])     ||
@@ -561,5 +567,13 @@ class Zen_Request {
         return ($this->_base_url = ($finalBaseUrl === '') ? rtrim($baseUrl, '/') : $finalBaseUrl);
     }
 
-
+    /**
+     * 获取参数
+     *
+     * @param string $name
+     * @return string
+     */
+    public function getParam(string $name): string {
+        return (isset(self::$_params[$name])) ? self::$_params[$name] : '';
+    }
 }

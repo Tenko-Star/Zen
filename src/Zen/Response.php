@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_Response
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_Response {
     /**
      * http code
@@ -256,5 +262,38 @@ class Zen_Response {
             $this->redirect($default);
         }
         exit;
+    }
+
+    /**
+     * 批量设置cookie
+     * 与原setcookie()用法相同
+     *
+     * @param array $cookies
+     * <p>以key-value的形式将需要设置的cookie传入一个数组中</p>
+     * @param int $expire
+     * @param string $path
+     * @param string $domain
+     * @param bool $secure
+     * @param bool $httponly
+     * @return bool
+     */
+    public function setCookies
+    (   array $cookies,
+        int $expire = 0,
+        string $path = '',
+        string $domain = '',
+        bool $secure = false,
+        bool $httponly = false  )
+    : bool{
+
+        $isFinish = true;
+        foreach ($cookies as $key => $value) {
+            if(!setcookie($key, $value, $expire, $path, $domain, $secure, $httponly)){
+                $isFinish = false;
+            }
+        }
+
+        return $isFinish;
+
     }
 }

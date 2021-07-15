@@ -3,7 +3,8 @@
 /**
  * 数据库适配器接口
  *
- * @author tenko_
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 interface Zen_DB_Adapter {
 

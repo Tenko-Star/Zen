@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_Router
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_Router {
     /**
      * 所有的组件名
@@ -23,23 +29,29 @@ class Zen_Router {
      */
     public static function route() {
         $request = Zen_Request::getInstance();
-        $path_info = $request->getPathInfo();
+        $path_info = $request->getRequestUri();
+
         if(strpos($path_info, __ZEN_INDEX__) === 0) {
-            $path_info = substr($path_info , strlen(__ZEN_INDEX__) - 1);
+            $path_info = substr($path_info , strlen(__ZEN_INDEX__));
         }
 
         if(empty(self::$_map)) { self::setRouteTable(); }
 
-        $matches = array();
-        foreach (self::$_map as $key => $value) {
-           if(strpos($path_info, $key) === 0) {
-               $matches[] = $key;
-           }
+        //匹配路由规则
+        if($path_info === '/') {
+            $match = '/';
+        }else {
+            $matches = array();
+            foreach (self::$_map as $key => $value) {
+                if(strpos($path_info, $key) === 0 && $key !== '/') {
+                    $matches[] = $key;
+                }
+            }
+            if(empty($matches)) { //未匹配到或只匹配到了根目录
+                throw new Zen_Route_Exception('', HTTP_NOT_FOUND);
+            }
+            $match = max($matches);
         }
-        if(empty($matches)) {
-            throw new Zen_Route_Exception('', 404);
-        }
-        $match = max($matches);
 
         $args = array();
         if(strlen($arg = substr($path_info, strlen($match) - 1)) > 1) {
@@ -64,6 +76,13 @@ class Zen_Router {
         );
         call_user_func_array($call, $function_args);
     }
+
+    /**
+     * 初始化路由表
+     *
+     * @param array $route_table
+     */
+    public static function init(array $route_table) { self::setRouteTable($route_table); }
 
     /**
      * 获取所有的组件信息
@@ -139,7 +158,7 @@ class Zen_Router {
                 }
             }
         } catch (ReflectionException $ref) {
-            throw new Zen_Route_Exception($ref->getMessage());
+            throw new Zen_Route_Exception($ref->getMessage(), HTTP_SERVER_ERROR);
         }
     }
 

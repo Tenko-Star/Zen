@@ -3,7 +3,8 @@
 /**
  * 数据库请求类
  *
- * @author tenko_
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 class Zen_DB_Query {
     /**
@@ -125,7 +126,7 @@ class Zen_DB_Query {
                 break;
             case Zen_DB::CACHE:
             case Zen_DB::NOSQL:
-                break;
+                return '';
             default:
         }
 
@@ -220,8 +221,7 @@ class Zen_DB_Query {
      * @param mixed 参数
      * @return Zen_DB_Query
      */
-    public function where() : Zen_DB_Query {
-        $condition = func_get_arg(0);
+    public function where(string $condition) : Zen_DB_Query {
         $condition = str_replace('?', "%s", $this->filterColumn($condition));
         $operator = empty($this->_query_builder['where']) ? ' WHERE ' : ' AND';
 
@@ -284,18 +284,18 @@ class Zen_DB_Query {
      * 分页查询
      *
      * @param integer $page 页数
-     * @param integer $pageSize 每页行数
+     * @param integer $page_size 每页行数
      * @return Zen_DB_Query
      */
-    public function page(int $page, int $pageSize) : Zen_DB_Query {
-        $pageSize = intval($pageSize);
-        $this->_query_builder['limit'] = $pageSize;
-        $this->_query_builder['offset'] = (max(intval($page), 1) - 1) * $pageSize;
+    public function page(int $page, int $page_size) : Zen_DB_Query {
+        $page_size = intval($page_size);
+        $this->_query_builder['limit'] = $page_size;
+        $this->_query_builder['offset'] = (max(intval($page), 1) - 1) * $page_size;
         return $this;
     }
 
     /**
-     * 指定需要写入的栏目及其值
+     * 指定需要写入的字段和数值
      *
      * @param array $rows
      * @return Zen_DB_Query
@@ -308,7 +308,7 @@ class Zen_DB_Query {
     }
 
     /**
-     * 排序顺序(ORDER BY)
+     * 排序顺序
      *
      * @param string $order 排序的索引
      * @param string $sort 排序的方式(ASC, DESC)
@@ -326,7 +326,7 @@ class Zen_DB_Query {
     }
 
     /**
-     * 集合聚集(GROUP BY)
+     * 集合聚集
      *
      * @param string $key 聚集的键值
      * @return Zen_DB_Query
@@ -337,12 +337,12 @@ class Zen_DB_Query {
     }
 
     /**
-     * HAVING (HAVING)
+     * HAVING
      *
+     * @param string $condition
      * @return Zen_DB_Query
      */
-    public function having() : Zen_DB_Query {
-        $condition = func_get_arg(0);
+    public function having(string $condition) : Zen_DB_Query {
         $condition = str_replace('?', "%s", $this->filterColumn($condition));
         $operator = empty($this->_query_builder['having']) ? ' HAVING ' : ' AND';
 
@@ -491,10 +491,9 @@ class Zen_DB_Query {
      * 转义参数
      *
      * @param array $values
-     * @access protected
      * @return array
      */
-    protected function quoteValues(array $values): array {
+    private function quoteValues(array $values): array {
         foreach ($values as &$value) {
             if (is_array($value)) {
                 $value = '(' . implode(',', array_map(array($this, 'quoteValue'), $value)) . ')';
@@ -512,7 +511,7 @@ class Zen_DB_Query {
      * @param $value
      * @return string
      */
-    public function quoteValue($value): string {
+    private function quoteValue($value): string {
         $this->_params[] = $value;
         return '#param:' . (count($this->_params) - 1) . '#';
     }
@@ -567,7 +566,7 @@ class Zen_DB_Query {
      * 读取一个缓存条目
      *
      * @param string $key
-     * @return bool
+     * @return Zen_DB_Query
      */
     public function get(string $key): Zen_DB_Query{
         if($this->_type !== self::TYPE_NOSQL) {

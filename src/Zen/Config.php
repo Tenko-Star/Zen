@@ -3,7 +3,8 @@
 /**
  * Zen设置类
  *
- * @author tenko_
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 class Zen_Config implements Iterator{
     /**

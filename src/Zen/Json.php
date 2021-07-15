@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_Json
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_Json{
     /**
      * 编码Json数据
@@ -14,9 +20,9 @@ class Zen_Json{
         if(__ZEN_JSON_SUPPORT__) {
             return json_encode($data, $assoc);
         }else if(!empty(__EXTRA_JSON_ENCODE__)){
-            return Zen_Widget::call_widget_func(__EXTRA_JSON_ENCODE__, $data);
+            return Zen_Widget::callWidgetFunction(__EXTRA_JSON_ENCODE__, $data);
         }else {
-            throw new Zen_Exception('Error: No Json support.');
+            throw new Zen_Exception('Error: No Json support.', HTTP_SERVER_ERROR);
         }
     }
 
@@ -31,9 +37,9 @@ class Zen_Json{
         if(__ZEN_JSON_SUPPORT__) {
             return json_decode($str);
         }else if(!empty(__EXTRA_JSON_DECODE__)) {
-            return Zen_Widget::call_widget_func(__EXTRA_JSON_DECODE__, $str, true);
+            return Zen_Widget::callWidgetFunction(__EXTRA_JSON_DECODE__, [$str]);
         }else {
-            throw new Zen_Exception('Error: No Json support.');
+            throw new Zen_Exception('Error: No Json support.', HTTP_SERVER_ERROR);
         }
     }
 }

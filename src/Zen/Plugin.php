@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_Plugin
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_Plugin {
     /**
      * 所有插件
@@ -78,7 +84,7 @@ class Zen_Plugin {
         /* 检查插件文件是否存在 */
         $php_path = __ZEN_PLUGIN_PATH__ . DIRECTORY_SEPARATOR . self::$_api[$func_name][0] . DIRECTORY_SEPARATOR . 'Plugin.php';
         if(!file_exists($php_path)) {
-            throw new Zen_Plugin_Exception("Plugin file not found. In: {$php_path}. \n");
+            throw new Zen_Plugin_Exception("Plugin file not found. In: {$php_path}. \n", PLUGIN_EXCEPTION);
         }
         @include_once $php_path;
 
@@ -147,23 +153,25 @@ class Zen_Plugin {
         }
 
         if(!in_array($plugin, self::$_plugins)) {
-            throw new Zen_Plugin_Exception("Error: This plugin is not available.\n");
+            throw new Zen_Plugin_Exception("Error: This plugin is not available.\n", PLUGIN_EXCEPTION);
         }
 
         $info = self::getPluginInfo($plugin);
         if(!self::checkInfo($info)) {
-            throw new Zen_Plugin_Exception("Error: Incomplete plugin info.\n");
+            throw new Zen_Plugin_Exception("Error: Incomplete plugin info.\n", PLUGIN_EXCEPTION);
         }
 
         /* 处理依赖 */
-        if(isset($info['depends'])){
-            $depends = $info['depends'];
-            foreach ($depends as $depend) {
+        if(isset($info['dependencies'])){
+            $dependencies = $info['dependencies'];
+            foreach ($dependencies as $depend) {
                 $version = floatval($depend['version']);
                 $widget = $depend['widgetName'];
 
                 if(floatval(call_user_func(array($widget, 'version'))) > $version) {
-                    throw new Zen_Plugin_Exception("Error: Widget version is too low. Widget name: {$widget}, plugin name: {$plugin}.\n");
+                    throw new Zen_Plugin_Exception(
+                        "Error: Widget version is too low. Widget name: {$widget}, plugin name: {$plugin}.\n",
+                        PLUGIN_EXCEPTION);
                 }
             }
         }
@@ -180,7 +188,9 @@ class Zen_Plugin {
             if(array_key_exists($api_func, self::$_api)) {
                 /* 如果存在冲突则抛出异常 */
                 $conflict_class = self::$_api[$api_func][0];
-                throw new Zen_Plugin_Exception("Error: Plugin conflict. Plugin name: {$conflict_class}.\n");
+                throw new Zen_Plugin_Exception(
+                    "Error: Plugin conflict. Plugin name: {$conflict_class}.\n",
+                    PLUGIN_EXCEPTION);
             }
 
             self::$_api[$api_func][0] = $plugin;
@@ -201,12 +211,12 @@ class Zen_Plugin {
         }
 
         if(!in_array($plugin, self::$_plugins)) {
-            throw new Zen_Plugin_Exception("Error: This plugin is not available.\n");
+            throw new Zen_Plugin_Exception("Error: This plugin is not available.\n", PLUGIN_EXCEPTION);
         }
 
         $info = self::getPluginInfo($plugin);
         if(!self::checkInfo($info)) {
-            throw new Zen_Plugin_Exception("Error: Incomplete plugin info.\n");
+            throw new Zen_Plugin_Exception("Error: Incomplete plugin info.\n", PLUGIN_EXCEPTION);
         }
         $functions = $info['functions'];
 
@@ -239,7 +249,7 @@ class Zen_Plugin {
         }
 
         if(!in_array($plugin, self::$_plugins)) {
-            throw new Zen_Plugin_Exception("This plugin is not available. Class name: {$plugin}.\n");
+            throw new Zen_Plugin_Exception("This plugin is not available. Class name: {$plugin}.\n", PLUGIN_EXCEPTION);
         }
 
         /* 加载配置文件 */
@@ -250,14 +260,14 @@ class Zen_Plugin {
         $info['displayName'] = @$doc->getElementsByTagName('displayName')->item(0)->nodeValue;
         $info['version'] = @$doc->getElementsByTagName('version')->item(0)->nodeValue;
         $info['description'] = @$doc->getElementsByTagName('description')->item(0)->nodeValue;
-        $depends = @$doc->getElementsByTagName('depend');
+        $dependencies = @$doc->getElementsByTagName('dependency');
         $functions = @$doc->getElementsByTagName('function');
 
         /* 处理依赖 */
-        foreach ($depends as $widget) {
+        foreach ($dependencies as $widget) {
             $widgetName = 'Widget_' . @$widget->getElementsByTagName('widgetName')->item(0)->nodeValue;
             $dependVersion = @$widget->getElementsByTagName('dependVersion')->item(0)->nodeValue;
-            $info['depends'][] = array(
+            $info['dependencies'][] = array(
                 'widgetName' => $widgetName,
                 'version' => $dependVersion
             );
@@ -293,8 +303,8 @@ class Zen_Plugin {
 
         if(empty($plugin_info['version'])) { return false; }
 
-        if(!isset($plugin_info['depends'])) {
-            foreach ($plugin_info['depends'] as $depend) {
+        if(!isset($plugin_info['dependencies'])) {
+            foreach ($plugin_info['dependencies'] as $depend) {
                 if($depend['widgetName'] === 'Widget_' || empty($depend['version'])) { return false; }
             }
         }

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_Render
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_Render {
     /**
      * string map
@@ -52,7 +58,7 @@ class Zen_Render {
         if(__ZEN_SECURITY__) {
             $value = Zen_Security::removeXSS($value);
         }elseif(!empty(__EXTRA_REMOVE_XSS__)) {
-            $value = Zen_Widget::call_widget_func(__EXTRA_REMOVE_XSS__, $value);
+            $value = Zen_Widget::callWidgetFunction(__EXTRA_REMOVE_XSS__, $value);
         }
         $this->_map[$name] = $value;
     }
@@ -71,8 +77,8 @@ class Zen_Render {
                 $key = Zen_Security::removeXSS($key);
                 $value = Zen_Security::removeXSS($value);
             }elseif(!empty(__EXTRA_REMOVE_XSS__)) {
-                $key = Zen_Widget::call_widget_func(__EXTRA_REMOVE_XSS__, $key);
-                $value = Zen_Widget::call_widget_func(__EXTRA_REMOVE_XSS__, $value);
+                $key = Zen_Widget::callWidgetFunction(__EXTRA_REMOVE_XSS__, [$key]);
+                $value = Zen_Widget::callWidgetFunction(__EXTRA_REMOVE_XSS__, [$value]);
             }
             $result[$key] = $value;
         }
@@ -129,7 +135,7 @@ class Zen_Render {
         }catch (Zen_Widget_Exception $e) {
             throw new Zen_Render_Exception("Widget: " . $e->getMessage());
         }catch (Zen_Exception $e) {
-            throw new Zen_Render_Exception($e->getMessage());
+            throw new Zen_Render_Exception($e->getMessage(), HTTP_SERVER_ERROR);
         }
     }
 

@@ -5,13 +5,13 @@
     <displayName>HelloWorld</displayName>
     <version>1.0</version>
     <description>插件配置样例</description>
-    <depends>
+    <dependencies>
         <!--  如果有依赖要求请写在这里  -->
-        <depend>
+        <dependency>
             <widgetName>Demo</widgetName>
             <dependVersion>1.0</dependVersion>
-        </depend>
-    </depends>
+        </dependency>
+    </dependencies>
     <functions>
         <!--   绑定的函数请写在这里    -->
         <function>

@@ -3,6 +3,8 @@
 /**
  * Pdo_Mysql适配器
  *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 class Zen_DB_Adapter_Pdo_Mysql extends Zen_DB_Adapter_Pdo
 {

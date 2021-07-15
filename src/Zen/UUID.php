@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_UUID
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_UUID {
     /**
      * UUID生成
@@ -12,7 +18,7 @@ class Zen_UUID {
             return self::uuid($prefix);
         }else {
             try{
-                return Zen_Widget::call_widget_func(__EXTRA_UUID_SUPPORT__);
+                return Zen_Widget::callWidgetFunction(__EXTRA_UUID_SUPPORT__);
             }catch (Zen_Widget_Exception $e) {
                 return self::uuid($prefix);
             }

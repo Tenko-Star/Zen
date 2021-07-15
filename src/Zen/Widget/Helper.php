@@ -13,9 +13,9 @@ spl_autoload_register(function($class_name) {
 
 /**
  * Class Zen_Widget_Helper
- * @author tenko_
- * @version 1.0
- * @package ZEN_CORE
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 class Zen_Widget_Helper {
     /**
@@ -71,7 +71,7 @@ class Zen_Widget_Helper {
                 }
             }
         }catch (ReflectionException $ref) {
-            throw new Zen_Widget_Exception($ref->getMessage());
+            throw new Zen_Widget_Exception($ref->getMessage(), HTTP_SERVER_ERROR);
         }
 
     }
@@ -98,6 +98,29 @@ class Zen_Widget_Helper {
         }else {
             return $widget;
         }
+    }
+
+    /**
+     * 执行动作（停用）
+     *
+     * @param string $widget_name
+     * @return bool <p> 如果执行成功返回true，出现错误返回false </p>
+     */
+    public static function action(string $widget_name): bool {
+//        $argc = func_num_args();
+//        $args = array();
+//        if($argc >= 2) {
+//            $args = func_get_args();
+//        }
+//
+//        /** @var Zen_Action_Widget $widget */
+//        $widget = self::factory($widget_name);
+//        if(!($widget instanceof Zen_Action_Widget)) {
+            return false;
+//        }
+//        $widget->init();
+//        $widget->execute(Zen_Request::getInstance(), Zen_Response::getInstance(), $args);
+//        return true;
     }
 
     /**

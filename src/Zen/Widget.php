@@ -2,6 +2,9 @@
 
 /**
  * 组件类抽象类
+ *
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
  */
 abstract class Zen_Widget {
     /**
@@ -12,14 +15,20 @@ abstract class Zen_Widget {
     const DEFAULT_VERSION = '1.0';
 
     /**
+     * 组件初始化
+     */
+    public function init() { }
+
+    /**
      * 获取组件对象
      *
      * @param string $widget_name
+     * @param array $args
      * @return object
      * @throws Zen_Widget_Exception
      */
-    protected function widget(string $widget_name) {
-        return Zen_Widget_Helper::factory($widget_name);
+    protected function widget(string $widget_name, array $args = array()) {
+        return Zen_Widget_Helper::factory($widget_name, $args);
     }
 
     /**
@@ -33,13 +42,13 @@ abstract class Zen_Widget {
     }
 
     /**
-     * 获取安全组件
+     * 获取安全组件（停用）
      *
      * @return Zen_Security
      */
-    protected function security(): Zen_Security {
-        return new Zen_Security();
-    }
+//    protected function security(): Zen_Security {
+//        return new Zen_Security();
+//    }
 
     /**
      * 返回版本号
@@ -55,11 +64,16 @@ abstract class Zen_Widget {
      *
      * @param string $callback
      *      format: "[class]@[function]"(without square brackets)
+     * @param array $func_args
+     * @param bool $direct_arg
      * @return false|mixed
      * @throws Zen_Widget_Exception
      */
-    public static function call_widget_func(string $callback) {
+    public static function callWidgetFunction(string $callback, array $func_args = array(), bool $direct_arg = false) {
         if(empty($callback)) { return false; }
+
+        //直接传递一个完整数组而不被拆分
+        $args = ($direct_arg) ? array($func_args) : $func_args;
 
         $function_array = preg_split('/@/', $callback);
         if(count($function_array) !== 2) {
@@ -67,8 +81,6 @@ abstract class Zen_Widget {
         }else {
             $name = $function_array[0];
             $func = $function_array[1];
-            $args = func_get_args();
-            array_shift($args);
 
             return call_user_func_array(array(Zen_Widget_Helper::factory($name), $func), $args);
         }

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Zen_Security
+ * 
+ * @author Tenko-Star
+ * @license GNU Lesser General Public License 2.1
+ */
 class Zen_Security {
     /**
      * 过滤url中非法字符串
@@ -11,7 +17,7 @@ class Zen_Security {
     public static function removeUrlXss(string $location) : string {
         /** url过滤支持 */
         if(!__ZEN_SECURITY__ && !empty(__EXTRA_SAFETY_URL__)) {
-            return Zen_Widget::call_widget_func(__EXTRA_SAFETY_URL__, $location);
+            return Zen_Widget::callWidgetFunction(__EXTRA_SAFETY_URL__, [$location]);
         }
 
         $url = parse_url(str_replace(array("\r", "\n", "\t", ' '), '', $location));
@@ -198,5 +204,39 @@ class Zen_Security {
      */
     public static function isInteger($data): bool {
         return is_numeric($data);
+    }
+
+    /**
+     * Commonly used characters in the password
+     *
+     * @param string $str
+     * @return bool
+     */
+    public static function password(string $str) : bool {
+        return (bool)preg_match("/^([a-z0-9@\$!%*#_~?&^.<>(){}+=,:;-])+$/i", $str);
+    }
+
+    /**
+     * Check E-mail
+     *
+     * @param string $str
+     * @return bool
+     */
+    public static function email(string $str) : bool {
+        return (bool)preg_match("/^([_a-z0-9-])+@([_a-z0-9-.])+([_a-z0-9-])+$/i", $str);
+    }
+
+    /**
+     * 检查参数
+     *
+     * @param string $param
+     * @return false|int
+     */
+    public function checkParams(string $param) {
+        if(__ZEN_MB_SUPPORT__) {
+            return mb_check_encoding($param);
+        }else {
+            return preg_match('//u', $param);
+        }
     }
 }
