@@ -472,8 +472,13 @@ class Zen_DB {
 
         switch($this->_authority) {
             case self::AUTH_CACHE:
-                if($action !== self::CACHE){
-                    return false;
+                switch($action) {
+                    case self::CACHE:
+                    case self::GET:
+                    case self::SET:
+                        break;
+                    default:
+                        return false;
                 }
                 break;
             case self::AUTH_READ:

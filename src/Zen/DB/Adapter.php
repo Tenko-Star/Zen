@@ -50,7 +50,6 @@ interface Zen_DB_Adapter {
      * @param mixed $handle 数据库句柄
      * @param string $action 数据库动作
      * @param string table 数据表
-     * @return resource
      * @throws Zen_DB_Query_Exception
      */
     public function query($query, $handle, string $action = '', string $table = '');

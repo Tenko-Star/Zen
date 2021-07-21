@@ -521,9 +521,9 @@ class Zen_DB_Query {
      *
      * @access public
      * @param string $attributeName 属性名称
-     * @return string | NULL
+     * @return mixed
      */
-    public function getAttribute(string $attributeName) : ?string {
+    public function getAttribute(string $attributeName) {
         return $this->_query_builder[$attributeName] ?? NULL;
     }
 
@@ -557,7 +557,7 @@ class Zen_DB_Query {
         $this->_query_builder['action'] = Zen_DB::SET;
         $this->_query_builder['key'] = $key;
         $this->_query_builder['value'] = $value;
-        $this->_query_builder['$expire'] = $expire;
+        $this->_query_builder['expire'] = $expire;
 
         return $this;
     }
