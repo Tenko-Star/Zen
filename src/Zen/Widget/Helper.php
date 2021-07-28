@@ -3,14 +3,6 @@
  * 助手类 可以用于获取额外引入的第三方类,或获取Widget类，暂不支持只有函数的第三方php代码。
  */
 
-/* 自动加载第三方类 */
-spl_autoload_register(function($class_name) {
-    $file = __ZEN_EXTRA_PATH__ . DIRECTORY_SEPARATOR . str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $class_name) . '.php';
-    if(file_exists($file)) {
-        @include_once $file;
-    }
-});
-
 /**
  * Class Zen_Widget_Helper
  *

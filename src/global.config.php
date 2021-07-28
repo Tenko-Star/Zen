@@ -30,14 +30,6 @@ const __PAGE_PATH__ = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Page';
     __ZEN_EXTRA_PATH__
 );
 
-/* 自动加载 */
-spl_autoload_register(function($class_name) {
-    $file = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $class_name) . '.php';
-    if(file_exists($file)) {
-        @include_once $file;
-    }
-});
-
 /* 数据库配置
  *
  * __ZEN_MULTI_DATABASE__ 多数据库支持开关

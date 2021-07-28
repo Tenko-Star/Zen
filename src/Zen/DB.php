@@ -1,4 +1,10 @@
 <?php
+/* 数据库权限常量 */
+const               AUTH_READ       =   1;
+const               AUTH_WRITE      =   2;
+const               AUTH_CACHE      =   3;
+const               AUTH_NOSQL      =   4;
+const               AUTH_MAIN       =   5;
 
 /**
  * 数据库连接类
@@ -205,7 +211,7 @@ class Zen_DB {
      * @param array $configs
      * @return bool
      */
-    public static function init(array $configs): bool {
+    public static function init(array $configs = __ZEN_DATABASE__): bool {
         self::$_available = self::$_template;
 
         if(!__ZEN_MULTI_DATABASE__ && !__ZEN_CACHE_SUPPORT__) {
