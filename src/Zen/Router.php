@@ -22,6 +22,13 @@ class Zen_Router {
     private static $_map = array();
 
     /**
+     * 忽略的文件
+     *
+     * @var array
+     */
+    private static $_ignore = array();
+
+    /**
      * 开始路由
      *
      * @return void
@@ -85,7 +92,10 @@ class Zen_Router {
      *
      * @param array $route_table
      */
-    public static function init(array $route_table) { self::setRouteTable($route_table); }
+    public static function init(array $route_table, array $route_ignore = array(), bool $refresh = false) {
+        self::setRouteTable($route_table);
+
+    }
 
     /**
      * 获取所有的组件信息
@@ -114,10 +124,18 @@ class Zen_Router {
             $full_path = $path . DIRECTORY_SEPARATOR . $php_file;
             if(is_dir($full_path) && $php_file !== '.' && $php_file !== '..') {
                 $path = $path . DIRECTORY_SEPARATOR . $php_file;
-                self::setAllWidget($path, ($prefix === '' ? 'Widget_' . $php_file . '_' : $prefix . $php_file . '_'));
+                self::setAllWidget($path, (empty($prefix) ? 'Widget_' . $php_file . '_' : $prefix . $php_file . '_'));
             }
             if(preg_match('/.*\.php$/i', $php_file)) {
                 self::$_widgets[] = ($prefix === '' ? 'Widget_' : $prefix) . substr($php_file, 0, strpos($php_file, '.php'));
+            }
+        }
+
+        if(!empty(self::$_ignore)) {
+            foreach (self::$_widgets as $key => $value) {
+                if(in_array($value, self::$_ignore)) {
+                    unset(self::$_widgets[$key]);
+                }
             }
         }
     }
@@ -144,10 +162,9 @@ class Zen_Router {
                 $matches = array();
                 foreach ($methods as $method) {
                     $doc = $method->getDocComment();
-                    $path = '';
 
                     if(preg_match(
-                        '/@map [\'\"](\/[A-Za-z0-9\/\-%]*)(:[A-Za-z0-9:\/]*)?[\'\"]/',
+                        '/@map\s[\'\"](\/[A-Za-z0-9\/\-%]*)(:[A-Za-z0-9:\/]*)?[\'\"]/',
                         $doc,       // 获取到的注解
                         $matches)) {
                         $path = $matches[1];
@@ -163,7 +180,7 @@ class Zen_Router {
                         }
 
                         if(preg_match(
-                            '/@method (GET|POST|PUT|DELETE|HEAD|CONNECT|OPTIONS|TRACE|PATCH)/',
+                            '/@method\s(GET|POST|PUT|DELETE|HEAD|CONNECT|OPTIONS|TRACE|PATCH)/',
                             $method->getDocComment(),
                             $matches)) {
                             self::$_map[$path]['type'] = $matches[1];
@@ -176,6 +193,33 @@ class Zen_Router {
         } catch (ReflectionException $ref) {
             throw new Zen_Route_Exception($ref->getMessage(), HTTP_SERVER_ERROR);
         }
+    }
+
+    /**
+     * 设置搜索被忽略的文件
+     *
+     * @param array $route_ignore
+     * @param bool $refresh
+     */
+    public static function setRouteIgnore(array $route_ignore, bool $refresh) {
+        if($refresh) {
+            foreach ($route_ignore as $key => $value) {
+                if(($pos = strpos($value, '.php')) !== false) {
+                    $route_ignore[$key] = 'Widget_' . substr(str_replace(array('\\', '/'), '_', $value), 0, $pos);
+                }
+            }
+        }
+        self::$_ignore = $route_ignore;
+
+    }
+
+    /**
+     * 获取忽略文件表
+     *
+     * @return array
+     */
+    public static function getRouteIgnore(): array {
+        return self::$_ignore;
     }
 
     /**

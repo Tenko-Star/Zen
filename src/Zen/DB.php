@@ -194,6 +194,11 @@ class Zen_DB {
     }
 
     /**
+     * 禁止复制对象
+     */
+    private function __clone() { }
+
+    /**
      * Get a Zen_DB instance
      *
      * @param int $authority
