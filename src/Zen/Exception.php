@@ -2,6 +2,7 @@
 
 //异常常量
 const   HTTP_NOT_FOUND      =       404;
+const   METHOD_NOT_ALLOW    =       405;
 const   HTTP_SERVER_ERROR   =       500;
 
 /**

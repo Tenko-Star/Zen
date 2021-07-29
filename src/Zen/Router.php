@@ -59,6 +59,9 @@ class Zen_Router {
         }
 
         //call function
+        if(!self::checkMethod($match)) { //验证请求方法
+            throw new Zen_Route_Exception('', METHOD_NOT_ALLOW);
+        }
         $cnt = isset(self::$_map[$match]['args']) ? count(self::$_map[$match]['args']) : 0;
         $function_args = array();
         for($i = 0; $i < $cnt; $i++) {
@@ -140,12 +143,16 @@ class Zen_Router {
                 $methods = $class->getMethods();
                 $matches = array();
                 foreach ($methods as $method) {
+                    $doc = $method->getDocComment();
+                    $path = '';
+
                     if(preg_match(
-                        '/@map\([\'\"](\/[A-Za-z0-9\/\-%]*)(:[A-Za-z0-9:\/]*)?[\'\"]\)/',
-                        $method->getDocComment(),
+                        '/@map [\'\"](\/[A-Za-z0-9\/\-%]*)(:[A-Za-z0-9:\/]*)?[\'\"]/',
+                        $doc,       // 获取到的注解
                         $matches)) {
-                        self::$_map[$matches[1]]['class'] = $widget;
-                        self::$_map[$matches[1]]['method'] = $method->name;
+                        $path = $matches[1];
+                        self::$_map[$path]['class'] = $widget;
+                        self::$_map[$path]['method'] = $method->name;
 
                         if(isset($matches[2])) {
                             $args = preg_split('/\//', $matches[2], -1, PREG_SPLIT_NO_EMPTY);
@@ -153,6 +160,15 @@ class Zen_Router {
                                 return substr($str, 1);
                             }, $args);
                             self::$_map[$matches[1]]['args'] = $args;
+                        }
+
+                        if(preg_match(
+                            '/@method (GET|POST|PUT|DELETE|HEAD|CONNECT|OPTIONS|TRACE|PATCH)/',
+                            $method->getDocComment(),
+                            $matches)) {
+                            self::$_map[$path]['type'] = $matches[1];
+                        }else {
+                            self::$_map[$path]['type'] = '';
                         }
                     }
                 }
@@ -172,5 +188,26 @@ class Zen_Router {
         if(empty(self::$_map)) { self::setRouteTable(); }
 
         return self::$_map;
+    }
+
+    /**
+     * 检查请求方法
+     *
+     * @param string $path
+     * @return bool
+     * <p>
+     * 当这个路径的请求方法没有设置时，默认允许访问这个方法，只有在设置的方法和实际请求的方法不同时才拒绝访问。
+     * </p>
+     */
+    public static function checkMethod(string $path) {
+        if(isset(self::$_map[$path]) && empty(self::$_map[$path]['type'])) {    //存在但是没有设定时默认允许执行
+            return true;
+        }
+
+        if(self::$_map[$path]['type'] === $_SERVER['REQUEST_METHOD']) {
+            return true;
+        }
+
+        return false;
     }
 }

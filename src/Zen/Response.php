@@ -14,8 +14,10 @@ class Zen_Response {
      * @var array
      */
     private static $_http_code = array(
+        // Informational 1xx
         100 => 'Continue',
         101 => 'Switching Protocols',
+        // Success 2xx
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',
@@ -23,13 +25,16 @@ class Zen_Response {
         204 => 'No Content',
         205 => 'Reset Content',
         206 => 'Partial Content',
+        // Redirection 3xx
         300 => 'Multiple Choices',
         301 => 'Moved Permanently',
-        302 => 'Found',
+        302 => 'Moved Temporarily ',  // 1.1
         303 => 'See Other',
         304 => 'Not Modified',
         305 => 'Use Proxy',
+        // 306 is deprecated but reserved
         307 => 'Temporary Redirect',
+        // Client Error 4xx
         400 => 'Bad Request',
         401 => 'Unauthorized',
         402 => 'Payment Required',
@@ -48,12 +53,14 @@ class Zen_Response {
         415 => 'Unsupported Media Type',
         416 => 'Requested Range Not Satisfiable',
         417 => 'Expectation Failed',
+        // Server Error 5xx
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
         502 => 'Bad Gateway',
         503 => 'Service Unavailable',
         504 => 'Gateway Timeout',
-        505 => 'HTTP Version Not Supported'
+        505 => 'HTTP Version Not Supported',
+        509 => 'Bandwidth Limit Exceeded'
     );
 
     /**
@@ -159,7 +166,7 @@ class Zen_Response {
      */
     public static function setStatus(int $code) {
         if (isset(self::$_http_code[$code])) {
-            header((isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1') . ' ' . $code . ' ' . self::$_http_code[$code], true, $code);
+            header(($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1') . ' ' . $code . ' ' . self::$_http_code[$code], true, $code);
         }
     }
 

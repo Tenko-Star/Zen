@@ -6,22 +6,25 @@
  */
 
 /* 核心文件位置 */
-define('__ZEN_CORE_PATH__', dirname(__FILE__));
+const __ZEN_CORE_PATH__     =   __DIR__;
 
 /* 组件目录 */
-const __ZEN_WIDGET_PATH__ = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Widget';
+const __ZEN_WIDGET_PATH__   =   __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Widget';
 
 /* 额外组件目录 */
-const __ZEN_EXTRA_PATH__ = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Extra';
+const __ZEN_EXTRA_PATH__    =   __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Extra';
 
 /* 插件目录 */
-const __ZEN_PLUGIN_PATH__ = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Plugin';
+const __ZEN_PLUGIN_PATH__   =   __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Plugin';
 
 /* 文件上传目录 */
-const __UPLOAD_PATH__ = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Upload';
+const __UPLOAD_PATH__       =   __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Upload';
 
 /* Page Path */
-const __PAGE_PATH__ = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Page';
+const __PAGE_PATH__         =   __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Page';
+
+/* Log Path */
+const __LOG_PATH__          =   __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Log';
 
 /* 设置include路径 */
 @set_include_path(
@@ -29,6 +32,8 @@ const __PAGE_PATH__ = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . 'Page';
     __ZEN_CORE_PATH__ . PATH_SEPARATOR .
     __ZEN_EXTRA_PATH__
 );
+
+require_once 'Zen/Loader.php';
 
 /* 数据库配置
  *

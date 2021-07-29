@@ -12,7 +12,8 @@ class Widget_Demo extends Zen_Page_Widget {
     private $_db;
 
     /**
-     * @map("/")
+     * @map "/"
+     * @method POST
      */
     public function render() {
         $db = Zen_DB::getDatabaseInfo();
