@@ -46,6 +46,9 @@ class Zen_Router {
 
         //匹配路由规则
         if($path_info === '/') {
+            if(!isset(self::$_map['/'])){
+                throw new Zen_Route_Exception('Unable to resolve path。', HTTP_NOT_FOUND);
+            }
             $match = '/';
         }else {
             $matches = array();
@@ -93,8 +96,8 @@ class Zen_Router {
      * @param array $route_table
      */
     public static function init(array $route_table, array $route_ignore = array(), bool $refresh = false) {
+        self::setRouteIgnore($route_ignore, $refresh);
         self::setRouteTable($route_table);
-
     }
 
     /**
@@ -118,16 +121,19 @@ class Zen_Router {
             $path = $dir;
         }
 
-        $php_files = scandir($path);
+        $scan_files = scandir($path, SCANDIR_SORT_NONE);
+        $php_files = array_diff($scan_files, array('.', '..'));
 
         foreach ($php_files as $php_file) {
             $full_path = $path . DIRECTORY_SEPARATOR . $php_file;
-            if(is_dir($full_path) && $php_file !== '.' && $php_file !== '..') {
-                $path = $path . DIRECTORY_SEPARATOR . $php_file;
-                self::setAllWidget($path, (empty($prefix) ? 'Widget_' . $php_file . '_' : $prefix . $php_file . '_'));
+            if(is_dir($full_path)) {
+                //fix bug
+                $next_path = $path . DIRECTORY_SEPARATOR . $php_file;
+                self::setAllWidget($next_path, (empty($prefix) ? 'Widget_' . $php_file . '_' : $prefix . $php_file . '_'));
+                continue;
             }
-            if(preg_match('/.*\.php$/i', $php_file)) {
-                self::$_widgets[] = ($prefix === '' ? 'Widget_' : $prefix) . substr($php_file, 0, strpos($php_file, '.php'));
+            if(preg_match('/(.*)\.php$/i', $php_file, $matches)) {
+                self::$_widgets[] = ($prefix === '' ? 'Widget_' : $prefix) . $matches[1];
             }
         }
 
@@ -162,9 +168,12 @@ class Zen_Router {
                 $matches = array();
                 foreach ($methods as $method) {
                     $doc = $method->getDocComment();
+                    if(!$doc) {
+                        continue;
+                    }
 
                     if(preg_match(
-                        '/@map\s[\'\"](\/[A-Za-z0-9\/\-%]*)(:[A-Za-z0-9:\/]*)?[\'\"]/',
+                        '/@map\s*[\'\"](\/[A-Za-z0-9\/\-%]*)(:[A-Za-z0-9:\/]*)?[\'\"]/',
                         $doc,       // 获取到的注解
                         $matches)) {
                         $path = $matches[1];
@@ -176,12 +185,12 @@ class Zen_Router {
                             $args = array_map(function ($str) {
                                 return substr($str, 1);
                             }, $args);
-                            self::$_map[$matches[1]]['args'] = $args;
+                            self::$_map[$path]['args'] = $args;
                         }
 
                         if(preg_match(
-                            '/@method\s(GET|POST|PUT|DELETE|HEAD|CONNECT|OPTIONS|TRACE|PATCH)/',
-                            $method->getDocComment(),
+                            '/@method[\s]*(GET|POST|PUT|DELETE|HEAD|CONNECT|OPTIONS|TRACE|PATCH)/',
+                            $doc,
                             $matches)) {
                             self::$_map[$path]['type'] = $matches[1];
                         }else {
