@@ -12,8 +12,29 @@ class Widget_Demo extends Zen_Page_Widget {
     private $_db;
 
     /**
-     * @map "/"
-     * @method POST
+     * 事务测试
+     *
+     * @map     '/'
+     */
+    public function index() {
+        $sql = $this->_db->insert('table')
+            ->rows(array(
+                '1' => 0,
+                '2' => 10,
+                '3' => 'abc'
+            ));
+        $this->_db->begin();
+        try{
+            $this->_db->query($sql);
+            $this->_db->commit();
+        }catch (Zen_DB_Query_Exception $q) {
+            $this->_db->rollback();
+        }
+    }
+
+    /**
+     * @map "/info"
+     * @method GET
      */
     public function render() {
         $db = Zen_DB::getDatabaseInfo();

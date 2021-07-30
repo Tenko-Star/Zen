@@ -529,6 +529,38 @@ class Zen_DB {
     }
 
     /**
+     * 开启事务
+     *
+     * @return bool
+     * @throws Zen_DB_Exception
+     */
+    public function begin():bool {
+        if(!$this->_adapter->test()) {
+            $this->connect();
+        }
+
+        return $this->_adapter->begin();
+    }
+
+    /**
+     * 提交事务
+     *
+     * @return bool
+     */
+    public function commit(): bool {
+        return $this->_adapter->commit();
+    }
+
+    /**
+     * 回滚事务
+     *
+     * @return bool
+     */
+    public function rollback(): bool {
+        return $this->_adapter->rollback();
+    }
+
+    /**
      * 一次取出所有行
      *
      * @param Zen_DB_Query $query 查询对象

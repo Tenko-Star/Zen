@@ -55,6 +55,30 @@ interface Zen_DB_Adapter {
     public function query($query, $handle, string $action = '', string $table = '');
 
     /**
+     * 开启事务
+     *
+     * @return bool
+     * <p>
+     * 如果开启事务失败，返回false。成功返回true。
+     * </p>
+     */
+    public function begin(): bool;
+
+    /**
+     * 提交事务
+     *
+     * @return bool
+     */
+    public function commit(): bool;
+
+    /**
+     * 回滚事务
+     *
+     * @return bool
+     */
+    public function rollback(): bool;
+
+    /**
      * 取出获取的数据的一行
      * 
      * @param resource $resource 查询的数据资源

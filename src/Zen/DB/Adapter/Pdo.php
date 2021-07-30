@@ -118,6 +118,36 @@ abstract class Zen_DB_Adapter_Pdo implements Zen_DB_Adapter
     }
 
     /**
+     * 开启事务
+     *
+     * @return bool
+     * <p>
+     * 如果开启事务失败，返回false。成功返回true。
+     * </p>
+     */
+    public function begin(): bool {
+        return $this->_object->beginTransaction();
+    }
+
+    /**
+     * 提交事务
+     *
+     * @return bool
+     */
+    public function commit(): bool {
+        return $this->_object->commit();
+    }
+
+    /**
+     * 回滚事务
+     *
+     * @return bool
+     */
+    public function rollback(): bool {
+        return $this->_object->rollBack();
+    }
+
+    /**
      * 将数据查询的其中一行作为数组取出,其中字段名对应数组键值
      *
      * @param object $resource 查询返回资源标识
