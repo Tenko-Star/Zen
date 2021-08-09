@@ -71,14 +71,14 @@ const __ZEN_INDEX__ = '/index.php';
 const __ZEN_ROUTER_ANNOTATION__ = true;
 /* 开启跨域支持 */
 const __ZEN_CORS_SUPPORT__ = true;
-
+/* 允许的跨域请求头 */
 const __ZEN_CORS_HEADER__ = array(
     'Access-Token',
     'Content-Type'
 );
-
-const __ZEN_CORS_FIELD__ = '*';
-
+/* 允许的请求来源 */
+const __ZEN_CORS_ORIGIN__ = '*';
+/* 允许的请求方法 */
 const __ZEN_CORS_METHOD__ = array(
     'PUT',
     'POST',

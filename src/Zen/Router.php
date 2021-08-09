@@ -36,7 +36,7 @@ class Zen_Router {
      */
     public static function route() {
         if(__ZEN_CORS_SUPPORT__) {
-            header('Access-Control-Allow-Origin:' . __ZEN_CORS_FIELD__);
+            header('Access-Control-Allow-Origin:' . __ZEN_CORS_ORIGIN__);
             header('Access-Control-Allow-Methods:' . implode(',', __ZEN_CORS_METHOD__));
             header('Access-Control-Allow-Headers:' . implode(',', __ZEN_CORS_HEADER__));
             if($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
