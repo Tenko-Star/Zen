@@ -30,25 +30,30 @@ class Zen_Loader {
      */
     public static function loadZenCore(string $class_name) {
         if(empty(__ZEN_CORE_PATH__)) {
-            throw new Zen_Loader_Exception("Error: Zen Core Path is not found.\n", HTTP_SERVER_ERROR);
+            throw new Zen_Loader_Exception("Error: Zen Core Path is not found.\n", 500);
         }
 
         $file = __ZEN_CORE_PATH__ . DIRECTORY_SEPARATOR . str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $class_name) . '.php';
-        @include_once $file;
+        if(file_exists($file)){
+            @include_once $file;
+        }
     }
 
     /**
      * 加载额外类
      *
      * @param string $class_name
+     * @throws Zen_Loader_Exception
      */
     public static function loadExtra(string $class_name) {
         if(empty(__ZEN_EXTRA_PATH__)) {
-            throw new Zen_Loader_Exception("Error: Extra Path is not found.\n", HTTP_SERVER_ERROR);
+            throw new Zen_Loader_Exception("Error: Extra Path is not found.\n", 500);
         }
 
-        $file = self::$_class_map[$class_name];
-        @include_once $file;
+        $file = __ZEN_EXTRA_PATH__ . DIRECTORY_SEPARATOR . self::$_class_map[$class_name];
+        if(file_exists($file)){
+            @include_once $file;
+        }
     }
 
     /**

@@ -48,7 +48,7 @@ abstract class Zen_DB_Adapter_Pdo implements Zen_DB_Adapter
             return $this->_object;
         } catch (PDOException $e) {
             /** 数据库异常 */
-            throw new Zen_DB_Adapter_Exception($e->getMessage(), HTTP_SERVER_ERROR);
+            throw new Zen_DB_Adapter_Exception($e->getMessage(), 500);
         }
     }
 

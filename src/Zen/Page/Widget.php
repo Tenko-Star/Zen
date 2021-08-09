@@ -38,7 +38,7 @@ abstract class Zen_Page_Widget extends Zen_Widget {
         if(file_exists($real_file)){
             @include_once $real_file;
         }else {
-            throw new Zen_Widget_Exception("No such file.", HTTP_NOT_FOUND);
+            throw new Zen_Widget_Exception("No such file.", 404);
         }
     }
 }

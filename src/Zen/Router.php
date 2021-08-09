@@ -35,6 +35,16 @@ class Zen_Router {
      * @throws Zen_Route_Exception
      */
     public static function route() {
+        if(__ZEN_CORS_SUPPORT__) {
+            header('Access-Control-Allow-Origin:' . __ZEN_CORS_FIELD__);
+            header('Access-Control-Allow-Methods:' . implode(',', __ZEN_CORS_METHOD__));
+            header('Access-Control-Allow-Headers:' . implode(',', __ZEN_CORS_HEADER__));
+            if($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+                http_response_code(204);
+                exit();
+            }
+        }
+
         $request = Zen_Request::getInstance();
         $path_info = $request->getRequestUri();
 
@@ -47,7 +57,7 @@ class Zen_Router {
         //匹配路由规则
         if($path_info === '/') {
             if(!isset(self::$_map['/'])){
-                throw new Zen_Route_Exception('Unable to resolve path。', HTTP_NOT_FOUND);
+                throw new Zen_Route_Exception('Unable to resolve path。', 404);
             }
             $match = '/';
         }else {
@@ -58,7 +68,7 @@ class Zen_Router {
                 }
             }
             if(empty($matches)) { //未匹配到或只匹配到了根目录
-                throw new Zen_Route_Exception('', HTTP_NOT_FOUND);
+                throw new Zen_Route_Exception('', 404);
             }
             $match = max($matches);
         }
@@ -70,7 +80,7 @@ class Zen_Router {
 
         //call function
         if(!self::checkMethod($match)) { //验证请求方法
-            throw new Zen_Route_Exception('', METHOD_NOT_ALLOW);
+            throw new Zen_Route_Exception('方法不正确', 405);
         }
         $cnt = isset(self::$_map[$match]['args']) ? count(self::$_map[$match]['args']) : 0;
         $function_args = array();
@@ -200,7 +210,7 @@ class Zen_Router {
                 }
             }
         } catch (ReflectionException $ref) {
-            throw new Zen_Route_Exception($ref->getMessage(), HTTP_SERVER_ERROR);
+            throw new Zen_Route_Exception($ref->getMessage(), 500);
         }
     }
 

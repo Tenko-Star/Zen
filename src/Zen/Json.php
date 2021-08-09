@@ -22,7 +22,7 @@ class Zen_Json{
         }else if(!empty(__EXTRA_JSON_ENCODE__)){
             return Zen_Widget::callWidgetFunction(__EXTRA_JSON_ENCODE__, $data);
         }else {
-            throw new Zen_Exception('Error: No Json support.', HTTP_SERVER_ERROR);
+            throw new Zen_Exception('Error: No Json support.', 500);
         }
     }
 
@@ -39,7 +39,7 @@ class Zen_Json{
         }else if(!empty(__EXTRA_JSON_DECODE__)) {
             return Zen_Widget::callWidgetFunction(__EXTRA_JSON_DECODE__, [$str]);
         }else {
-            throw new Zen_Exception('Error: No Json support.', HTTP_SERVER_ERROR);
+            throw new Zen_Exception('Error: No Json support.', 500);
         }
     }
 }

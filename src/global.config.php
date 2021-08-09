@@ -49,8 +49,8 @@ const __ZEN_DATABASE__ = array(
         'database' => 'test',
         'host' => 'localhost',
         'port' => '3306',
-        'user' => '',
-        'password' => '',
+        'user' => 'tenko',
+        'password' => 'Ap009731',
         'charset' => 'utf8mb4',
         'authority' => Zen_DB::AUTH_MAIN
     ]
@@ -69,6 +69,21 @@ const __ZEN_WIDGET_RET_OBJ__ = true;
 const __ZEN_INDEX__ = '/index.php';
 /* 开启注解路由 */
 const __ZEN_ROUTER_ANNOTATION__ = true;
+/* 开启跨域支持 */
+const __ZEN_CORS_SUPPORT__ = true;
+
+const __ZEN_CORS_HEADER__ = array(
+    'Access-Token',
+    'Content-Type'
+);
+
+const __ZEN_CORS_FIELD__ = '*';
+
+const __ZEN_CORS_METHOD__ = array(
+    'PUT',
+    'POST',
+    'GET'
+);
 
 /* 第三方组件函数绑定(仅Zen核心组件绑定) */
 /* 用于做http参数检查 */

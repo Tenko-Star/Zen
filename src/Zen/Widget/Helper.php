@@ -63,7 +63,7 @@ class Zen_Widget_Helper {
                 }
             }
         }catch (ReflectionException $ref) {
-            throw new Zen_Widget_Exception($ref->getMessage(), HTTP_SERVER_ERROR);
+            throw new Zen_Widget_Exception($ref->getMessage(), 500);
         }
 
     }

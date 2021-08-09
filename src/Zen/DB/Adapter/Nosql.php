@@ -104,6 +104,7 @@ abstract class Zen_DB_Adapter_Nosql implements Zen_DB_Adapter {
     public function quoteValue(string $string): string
     {
         // TODO: Implement quoteValue() method.
+        return '';
     }
 
     /**
@@ -116,6 +117,7 @@ abstract class Zen_DB_Adapter_Nosql implements Zen_DB_Adapter {
     public function quoteColumn(string $string): string
     {
         // TODO: Implement quoteColumn() method.
+        return '';
     }
 
     /**

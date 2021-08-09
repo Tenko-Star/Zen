@@ -135,7 +135,7 @@ class Zen_Render {
         }catch (Zen_Widget_Exception $e) {
             throw new Zen_Render_Exception("Widget: " . $e->getMessage());
         }catch (Zen_Exception $e) {
-            throw new Zen_Render_Exception($e->getMessage(), HTTP_SERVER_ERROR);
+            throw new Zen_Render_Exception($e->getMessage(), 500);
         }
     }
 

@@ -179,7 +179,7 @@ class Zen_DB {
         }
 
         if(!call_user_func(array($adapter_name, 'isAvailable'))) {
-            throw new Zen_DB_Exception("{$adapter_name} is not available.", HTTP_SERVER_ERROR);
+            throw new Zen_DB_Exception("{$adapter_name} is not available.", 500);
         }
         $this->_index = $index;
         $this->_adapter = new $adapter_name();
